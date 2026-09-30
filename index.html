@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Overpass:wght@500;700;800;900&family=Overpass+Mono:wght@600;700&display=swap">
 <style>
-/* Layout: joc a pantalla completa — marcador amb aspecte de senyal de carretera a dalt, ciutat i tauler al mig (ocupa tota l'amplada), botonera a baix */
+/* Layout: joc a pantalla completa — marcador amb aspecte de senyal de carretera a dalt (nivell, temps, monedes; vides, pausa, menú), ciutat i tauler a tota l'amplada a sota */
 :root{
   --sidewalk:#D3DAD9;
   --sidewalk-line:#C3CBCA;
@@ -34,59 +34,61 @@ body{
   color:var(--ink);font-family:var(--f-sign);
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;
 }
-.app{height:100%;padding-inline:16px;padding-block:10px;display:flex;flex-direction:column;gap:8px}
-header,.sub,.tools{width:100%;max-width:760px;margin-inline:auto}
+.app{height:100%;padding-inline:16px;padding-block:10px;display:flex;flex-direction:column;gap:7px}
+header,.sub{width:100%;max-width:760px;margin-inline:auto}
 header{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .lvl{background:var(--sign-green);color:#fff;border-radius:10px;padding:3px;box-shadow:0 2px 0 rgba(0,0,0,.22)}
 .lvl-in{border:2px solid #fff;border-radius:7px;padding:5px 12px 3px;display:flex;align-items:baseline;gap:8px}
 .lvl small{font-weight:800;font-size:11px;letter-spacing:.14em}
 .lvl b{font-family:var(--f-num);font-size:24px;line-height:1;font-variant-numeric:tabular-nums}
-.hearts{display:flex;gap:3px}
-.hearts{align-items:center}
-.hearts svg{width:26px;height:26px;display:block;transition:transform .2s}
-.hcount{font-family:var(--f-num);font-size:20px;font-weight:700;color:var(--stop-red);margin-left:2px}
+.timer{display:flex;align-items:center;gap:7px;background:var(--ink);color:var(--sign-yellow);border-radius:10px;padding:6px 12px 4px;font-family:var(--f-num);font-weight:700;font-size:22px;line-height:1;font-variant-numeric:tabular-nums;box-shadow:0 2px 0 rgba(0,0,0,.22)}
+.timer svg{width:18px;height:18px;flex:none;margin-top:-2px}
+.timer.low{background:var(--stop-red);color:#fff;animation:blink 1s steps(2,start) infinite}
+@keyframes blink{50%{opacity:.72}}
+.hearts{display:flex;gap:3px;align-items:center}
+.hearts svg{width:24px;height:24px;display:block;transition:transform .2s}
 .hearts .on path{fill:var(--stop-red)}
 .hearts .off path{fill:rgba(27,33,38,.18)}
 .hearts .lost{animation:pop .35s}
 @keyframes pop{40%{transform:scale(1.35)}}
+.hcount{font-family:var(--f-num);font-size:19px;font-weight:700;color:var(--stop-red);margin-left:2px}
+.hfull,.hcompact{display:flex;align-items:center;gap:inherit}
+.hcompact,.lcompact{display:none}
+.lcompact{align-items:center;gap:5px;color:var(--ink)}
+.caricon{width:28px;height:28px;display:block}
+.left .lcompact b{font-size:19px;font-weight:700}
 .coins{display:flex;align-items:center;gap:6px;background:var(--plate);border-radius:999px;padding:4px 12px 4px 5px;font-family:var(--f-num);font-weight:700;font-size:17px;font-variant-numeric:tabular-nums;box-shadow:0 2px 0 rgba(0,0,0,.14)}
 .coins svg{width:24px;height:24px;display:block}
-.sub{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.left{font-size:13px;font-weight:800;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.sub{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.left{font-size:13px;font-weight:800;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;margin-right:auto}
 .left b{font-family:var(--f-num);color:var(--ink);font-size:14px}
-.minis{display:flex;gap:6px}
-.mini{width:34px;height:34px;border-radius:50%;border:0;background:var(--plate);color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.14);font:inherit;font-weight:900;font-size:16px}
-.mini svg{width:18px;height:18px}
-.pill{width:auto;border-radius:999px;padding:0 12px 0 10px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;letter-spacing:.02em}
-@media (max-width:420px){.pill{width:34px;padding:0;justify-content:center}.pill span{display:none}}
-.mini:focus-visible,.tool:focus-visible,.btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.minis{display:flex;gap:8px}
+.mini{width:40px;height:40px;border-radius:10px;border:0;background:var(--plate);color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.16);font:inherit}
+.mini svg{width:20px;height:20px}
+.mini:active{transform:translateY(2px);box-shadow:0 0 0 rgba(0,0,0,.16)}
+.mini:focus-visible,.btn:focus-visible,.mbtn:focus-visible,.diff:focus-visible,.bombpill:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 main{flex:1;min-height:0;position:relative;margin-inline:-16px;overflow:hidden;background:#CBD1CF}
 canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:manipulation;outline:none;cursor:pointer}
 .toast{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 14px;border-radius:8px;font-weight:700;font-size:14px;line-height:1.3;width:max-content;max-width:calc(100% - 32px);text-align:center;pointer-events:none;opacity:0;transition:opacity .25s;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 .toast.show{opacity:1}
-.tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.tool{font:inherit;font-weight:800;font-size:15px;border:0;border-radius:12px;padding:11px 6px 9px;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.24);transition:transform .08s,box-shadow .08s,opacity .2s;min-width:0}
-.tool svg{width:20px;height:20px;flex:none}
-.tool:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.24)}
-.t-hint{background:var(--sign-yellow);color:var(--ink)}
-.t-bomb{background:var(--stop-red);color:#fff}
-.t-bomb[aria-pressed="true"]{background:var(--ink)}
-.t-reset{background:var(--plate);color:var(--ink)}
-.cost{font-family:var(--f-num);font-size:12px;padding:1px 6px 0;border-radius:999px;background:rgba(0,0,0,.15)}
-.tool.poor{opacity:.55}
-.lbl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media (max-width:440px){.cost{display:none}.tool{gap:5px}}
-@media (max-width:420px){.hearts{gap:2px}.hearts svg{width:21px;height:21px}.lvl-in{padding:4px 9px 2px}}
+.bombpill{position:absolute;left:50%;top:10px;transform:translateX(-50%);border:0;border-radius:999px;background:var(--stop-red);color:#fff;font:inherit;font-weight:800;font-size:14px;padding:9px 16px 7px;display:flex;align-items:center;gap:8px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.3);white-space:nowrap}
+.bombpill svg{width:16px;height:16px}
+@media (max-width:420px){
+  .hearts{gap:2px}.hearts svg{width:20px;height:20px}
+  .lvl-in{padding:4px 9px 2px;gap:6px}.lvl b{font-size:21px}
+  .timer{font-size:19px;padding:6px 10px 4px}
+  .hfull,.lfull{display:none}
+  .hcompact,.lcompact{display:flex}
+  .hcompact svg{width:24px;height:24px}
+}
 @media (max-height:540px){
   .app{gap:5px;padding-block:6px}
-  .tool{padding:7px 6px 5px;font-size:14px}
-  .hearts svg{width:22px;height:22px}
-  .mini{width:30px;height:30px}
-  .lvl b{font-size:20px}
+  .mini{width:34px;height:34px}
+  .lvl b{font-size:20px}.timer{font-size:18px}
 }
 
 .overlay{position:fixed;inset:0;background:rgba(27,33,38,.55);display:grid;place-items:center;padding:16px;z-index:10;overflow:auto}
-.card{width:min(400px,100%);border-radius:14px;padding:5px;box-shadow:0 12px 40px rgba(0,0,0,.35);animation:rise .3s ease-out}
+.card{width:min(420px,100%);border-radius:14px;padding:5px;box-shadow:0 12px 40px rgba(0,0,0,.35);animation:rise .3s ease-out}
 @keyframes rise{from{transform:translateY(16px);opacity:0}}
 .card-in{border-radius:10px;padding:22px 22px 20px;display:flex;flex-direction:column;gap:10px;text-align:center}
 .card h2{margin:0;font-size:34px;font-weight:900;line-height:1;text-wrap:balance;letter-spacing:.01em}
@@ -100,55 +102,72 @@ canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:manipulatio
 .help .card-in{background:var(--plate);text-align:left}
 .help ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:15px;line-height:1.4}
 .help kbd{font-family:var(--f-num);font-size:12px;background:#E3E7E5;border-radius:4px;padding:1px 5px}
+.dark{background:var(--ink);color:var(--ink)}
+.dark .card-in{background:var(--plate);text-align:left}
 .btns{display:flex;flex-direction:column;gap:8px;margin-top:6px}
 .btn{font:inherit;font-weight:800;font-size:17px;border:0;border-radius:10px;padding:12px 16px 10px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.25)}
 .btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.25)}
 .b-light{background:var(--plate);color:var(--sign-green)}
 .b-red{background:var(--stop-red);color:#fff}
+.b-green{background:var(--sign-green);color:#fff}
 .b-ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
 .b-dark{background:var(--ink);color:#fff}
 .reward{font-family:var(--f-num);font-weight:700;font-size:18px}
-@media (prefers-reduced-motion:reduce){.card,.hearts .lost{animation:none}.toast{transition:none}}
+.big-time{font-family:var(--f-num);font-weight:700;font-size:44px;line-height:1;color:var(--stop-red)}
+.mhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.mhead h2{font-size:28px}
+.mtag{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--sign-green);white-space:nowrap}
+.mgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (max-width:360px){.mgrid{grid-template-columns:1fr}}
+.mbtn{font:inherit;font-weight:800;font-size:15px;line-height:1.2;border:0;border-radius:10px;padding:12px 12px 10px;display:flex;align-items:center;gap:9px;text-align:left;cursor:pointer;background:#E4E8E6;color:var(--ink);box-shadow:0 2px 0 rgba(0,0,0,.14);min-width:0}
+.mbtn svg{width:20px;height:20px;flex:none}
+.mbtn:active{transform:translateY(2px);box-shadow:none}
+.mbtn.red{background:var(--stop-red);color:#fff}
+.mbtn.poor{opacity:.55}
+.mbtn .cost{margin-left:auto;font-family:var(--f-num);font-size:12px;padding:2px 7px 0;border-radius:999px;background:rgba(0,0,0,.16)}
+.mbtn.wide{grid-column:1/-1}
+.diffs{display:flex;flex-direction:column;gap:8px}
+.diff{font:inherit;display:flex;flex-direction:column;gap:3px;text-align:left;border:2px solid #D2D8D6;background:#fff;border-radius:10px;padding:10px 12px 9px;cursor:pointer;color:var(--ink)}
+.diff[aria-checked="true"]{border-color:var(--sign-green);background:#ECF5F0;box-shadow:inset 0 0 0 1px var(--sign-green)}
+.diff .dname{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:900}
+.diff .dname i{font-style:normal;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--sign-green);background:#D8EDE2;border-radius:999px;padding:2px 8px 1px}
+.diff small{font-size:13px;line-height:1.35;color:var(--muted);font-weight:600}
+@media (prefers-reduced-motion:reduce){.card,.hearts .lost,.timer.low{animation:none}.toast{transition:none}}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
     <div class="lvl" aria-label="Nivell"><div class="lvl-in"><small>NIVELL</small><b id="lvl">1</b></div></div>
-    <div class="hearts" id="hearts" aria-label="Vides"></div>
+    <div class="timer" id="timer" aria-label="Temps restant">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9.5 2.5h5"/></svg>
+      <span id="time">0:00</span>
+    </div>
     <div class="coins" aria-label="Monedes">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="#F3C22F" stroke="#B4870E" stroke-width="1.6"/><circle cx="12" cy="12" r="6.6" fill="none" stroke="#B4870E" stroke-width="1.4"/><path d="M10.4 9.2h3.2M10.4 12h3.2M10.4 14.8h3.2" stroke="#B4870E" stroke-width="1.3" stroke-linecap="round"/></svg>
       <span id="coins">60</span>
     </div>
   </header>
   <div class="sub">
-    <div class="left" id="left">Queden <b>0</b> vehicles</div>
+    <div class="hearts" id="hearts" aria-label="Vides"></div>
+    <div class="left" id="left">Queden <b>0</b></div>
     <div class="minis">
-      <button class="mini pill" id="zeroBtn" aria-label="Comença des de zero" title="Comença des de zero"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h12l-2.5 4 2.5 4H5" fill="currentColor"/></svg><span>Des de zero</span></button>
-      <button class="mini" id="soundBtn" aria-label="So" aria-pressed="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path id="waves" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path id="mute" d="M17 9l5 6M22 9l-5 6"/></svg>
+      <button class="mini" id="pauseBtn" aria-label="Pausa" title="Pausa">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4.2" height="14" rx="1.2"/><rect x="13.8" y="5" width="4.2" height="14" rx="1.2"/></svg>
       </button>
-      <button class="mini" id="helpBtn" aria-label="Com es juga">?</button>
+      <button class="mini" id="menuBtn" aria-label="Menú" title="Menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
     </div>
   </div>
   <main id="stage">
     <canvas id="cv" tabindex="0" aria-label="Tauler de joc"></canvas>
+    <button class="bombpill" id="bombPill" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="14" r="7" fill="currentColor" stroke="none"/><path d="M14.5 8.5 17 6"/></svg>
+      Toca un vehicle · Cancel·la
+    </button>
     <div class="toast" id="toast" role="status"></div>
   </main>
-  <div class="tools">
-    <button class="tool t-hint" id="hintBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></svg>
-      <span class="lbl">Pista</span><span class="cost" id="hintCost">20</span>
-    </button>
-    <button class="tool t-bomb" id="bombBtn" aria-pressed="false">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="14" r="7" fill="currentColor" stroke="none"/><path d="M14.5 8.5 17 6"/><path d="M18 3v1.5M21 6h-1.5M20.2 3.8l-1 1"/></svg>
-      <span class="lbl" id="bombLbl">Bomba</span><span class="cost" id="bombCost">40</span>
-    </button>
-    <button class="tool t-reset" id="resetBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg>
-      <span class="lbl">Reinicia</span>
-    </button>
-  </div>
 </div>
 
 <div class="overlay" id="winO" hidden>
@@ -172,15 +191,74 @@ canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:manipulatio
   </div></div>
 </div>
 
+<div class="overlay" id="timeO" hidden>
+  <div class="card lose"><div class="card-in">
+    <div class="eyebrow" style="color:var(--stop-red)">S'ha acabat el temps</div>
+    <div class="big-time">0:00</div>
+    <p id="timeTxt">Encara queden vehicles.</p>
+    <div class="btns">
+      <button class="btn b-green" id="buyTime">+30 segons · 10 monedes</button>
+      <button class="btn b-ghost" id="timeRetry">Torna a començar el nivell</button>
+    </div>
+  </div></div>
+</div>
+
+<div class="overlay" id="pauseO" hidden>
+  <div class="card dark"><div class="card-in" style="text-align:center">
+    <div class="eyebrow">Joc aturat</div>
+    <h2>Pausa</h2>
+    <p>El temps, el trànsit i els semàfors estan aturats.</p>
+    <div class="btns"><button class="btn b-dark" id="resumeBtn">Continua</button></div>
+  </div></div>
+</div>
+
+<div class="overlay" id="menuO" hidden>
+  <div class="card dark"><div class="card-in">
+    <div class="mhead"><h2>Menú</h2><span class="mtag" id="menuDiff">Principiant</span></div>
+    <div class="mgrid">
+      <button class="mbtn red" id="mBomb">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="14" r="7" fill="currentColor" stroke="none"/><path d="M14.5 8.5 17 6"/><path d="M18 3v1.5M21 6h-1.5M20.2 3.8l-1 1"/></svg>
+        <span>Bomba</span><span class="cost" id="mBombCost">40</span>
+      </button>
+      <button class="mbtn" id="mRestart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/></svg>
+        <span>Reinicia el nivell</span>
+      </button>
+      <button class="mbtn" id="soundBtn" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path id="waves" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path id="mute" d="M17 9l5 6M22 9l-5 6"/></svg>
+        <span id="soundLbl">So: activat</span>
+      </button>
+      <button class="mbtn" id="mHelp">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.4M12 17h.01"/></svg>
+        <span>Com es juga</span>
+      </button>
+      <button class="mbtn wide" id="mZero">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h12l-2.5 4 2.5 4H5" fill="currentColor"/></svg>
+        <span>Comença des de zero i tria la dificultat</span>
+      </button>
+    </div>
+    <div class="btns"><button class="btn b-dark" id="menuClose">Tanca el menú</button></div>
+  </div></div>
+</div>
+
 <div class="overlay" id="zeroO" hidden>
   <div class="card lose"><div class="card-in">
     <div class="eyebrow" style="color:var(--stop-red)">Comença des de zero</div>
     <h2 style="font-size:28px">Esborrar el progrés?</h2>
-    <p>Tornaràs al nivell 1 amb <span id="zeroCoins">60</span> monedes. Perdràs el nivell i les monedes que tens ara, i no es pot desfer.</p>
+    <p>Tornaràs al nivell 1 i podràs triar la dificultat. Perdràs el nivell i les monedes que tens ara, i no es pot desfer.</p>
     <div class="btns">
       <button class="btn b-red" id="zeroYes">Sí, comença des de zero</button>
       <button class="btn b-ghost" id="zeroNo">Cancel·la</button>
     </div>
+  </div></div>
+</div>
+
+<div class="overlay" id="diffO" hidden>
+  <div class="card win"><div class="card-in" style="background:var(--plate);color:var(--ink);border-color:var(--plate);text-align:left">
+    <div class="eyebrow" style="color:var(--sign-green)">Partida nova</div>
+    <h2 style="font-size:30px">Tria la dificultat</h2>
+    <div class="diffs" id="diffList" role="radiogroup" aria-label="Dificultat"></div>
+    <div class="btns"><button class="btn b-green" id="diffStart">Comença a jugar</button></div>
   </div></div>
 </div>
 
@@ -191,14 +269,16 @@ canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:manipulatio
     <ul>
       <li>Cada vehicle només pot avançar cap on apunta la fletxa.</li>
       <li>Toca'l: si té el camí lliure fins a la vora, surt al carrer, gira a la dreta i marxa.</li>
-      <li>Si hi ha un altre vehicle al davant, hi topa i perds una vida. Tens <span id="hLives">3</span> vides per nivell.</li>
+      <li>Si hi ha un altre vehicle al davant, hi topa i perds una vida. Tens <span id="hLives">5</span> vides per nivell.</li>
+      <li><b>Temps</b>: cada nivell té un temps que depèn del nombre de vehicles. Si s'acaba i encara en queden, pots comprar <span id="hExtraS">30</span> segons per <span id="hExtraP">10</span> monedes.</li>
       <li><b>Trànsit</b> (des del nivell <span id="hTraffic">3</span>): pels carrers circulen cotxes grisos i blancs, sense fletxa. Si en surt un dels teus i hi xoca, torna a la seva plaça i perds una vida. Espera que el carril més proper al tauler estigui lliure.</li>
+      <li><b>Emergències</b>: de tant en tant passen cotxes de policia, ambulàncies i camions de bombers, amb els llums encesos. Si hi xoques, perds <span id="hEmerg">2</span> vides.</li>
       <li><b>Semàfors</b> (des del nivell <span id="hLights">4</span>): els costats amb pas de vianants tenen semàfor. Si hi fas sortir un vehicle amb el llum vermell, perds una vida. En verd i en groc pots passar.</li>
       <li>Treu tots els vehicles per superar el nivell i guanyar monedes.</li>
-      <li><b>Pista</b> (<span id="hHint">20</span> monedes) marca un vehicle que pot sortir. <b>Bomba</b> (<span id="hBomb">40</span>) fa explotar el vehicle que triïs.</li>
-      <li>Teclat: <kbd>fletxes</kbd> per moure't, <kbd>Espai</kbd> per arrencar, <kbd>P</kbd> pista, <kbd>B</kbd> bomba, <kbd>R</kbd> reinicia.</li>
+      <li>Al <b>menú</b> hi ha la <b>bomba</b> (<span id="hBomb">40</span> monedes), que fa explotar el vehicle que triïs, i les opcions de so i de partida.</li>
+      <li>Teclat: <kbd>fletxes</kbd> per moure't, <kbd>Espai</kbd> per arrencar, <kbd>P</kbd> pausa, <kbd>M</kbd> menú, <kbd>B</kbd> bomba, <kbd>R</kbd> reinicia.</li>
     </ul>
-    <div class="btns"><button class="btn b-dark" id="helpClose">A jugar</button><button class="btn b-ghost" id="helpZero">Comença des de zero</button></div>
+    <div class="btns"><button class="btn b-dark" id="helpClose">A jugar</button></div>
   </div></div>
 </div>
 
@@ -209,92 +289,134 @@ canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:manipulatio
    CONFIGURACIÓ DEL JOC: pots canviar aquests valors lliurement.
    Desa el fitxer i recarrega la pàgina (F5) per veure els canvis.
    Els decimals s'escriuen amb punt (1.5), no amb coma.
+
+   TEMPS DE CADA NIVELL = TEMPS_FIX + (vehicles aparcats × TEMPS_PER_COTXE) + TEMPS_MARGE
    ===================================================================== */
-// var CONFIG={
-//   /* ---- Vides ---- */
-//   VIDES:5,                            // vides a cada nivell
-
-//   /* ---- Trànsit dels carrers ---- */
-//   TRANSIT_DES_DEL_NIVELL:3,           // nivell on comença el trànsit (posa 999 perquè no n'hi hagi mai)
-//   TRANSIT_SEPARACIO_INICIAL:5.2,      // segons entre cotxes de cada carril quan comença el trànsit (més gran = menys cotxes)
-//   TRANSIT_SEPARACIO_PER_NIVELL:0.12,  // segons que es redueix la separació a cada nivell (0 = el trànsit no augmenta mai)
-//   TRANSIT_SEPARACIO_MINIMA:1.5,       // separació mínima: el màxim de trànsit que hi pot arribar a haver
-//   TRANSIT_CARRIL_CONTRARI:1,          // multiplica la separació al carril contrari, el que no et fa perdre vides (2 = la meitat de cotxes)
-//   TRANSIT_VELOCITAT:2.4,              // velocitat mínima dels cotxes, en caselles per segon
-//   TRANSIT_VELOCITAT_VARIACIO:1.3,     // cada cotxe hi suma un valor a l'atzar entre 0 i aquest número
-//   TRANSIT_VELOCITAT_PER_NIVELL:0.035, // velocitat extra per cada nivell
-//   TRANSIT_VELOCITAT_EXTRA_MAXIMA:1.4, // límit d'aquesta velocitat extra
-//   TRANSIT_CAMIONS:0.15,               // proporció de camions (0 = cap, 1 = tots)
-
-//   /* ---- Semàfors ---- */
-//   SEMAFORS_DES_DEL_NIVELL:4,          // nivell on apareix el primer semàfor (en surten més als nivells següents)
-//   SEMAFOR_VERD:5.5,                   // segons en verd
-//   SEMAFOR_GROC:1.5,                   // segons en groc (encara es pot passar)
-//   SEMAFOR_VERMELL:4.5,                // segons en vermell
-
-//   /* ---- Monedes ---- */
-//   MONEDES_INICIALS:60,                // monedes en començar a jugar per primera vegada
-//   PREU_PISTA:20,
-//   PREU_BOMBA:40,
-//   PREU_CONTINUAR:30,                  // preu de continuar amb 1 vida quan les perds totes
-
-//   /* ---- So ---- */
-//   SO_ARRENCADA:'arrencada.mp3',       // fitxer d'àudio, al mateix directori que aquesta pàgina
-//   VOLUM_ARRENCADA:0.8                 // de 0 a 1
-// };
 var CONFIG={
-  /* ---- Vides ---- */
-  VIDES:9,                            // vides a cada nivell
+  /* ---- Comú a totes les dificultats ---- */
+  DIFICULTAT_PER_DEFECTE:'principiant', // la que surt marcada en començar una partida
+  TEMPS_FIX:15,                          // segons que s'afegeixen sempre al temps de cada nivell
+  SO_ARRENCADA:'arrencadaCurta.mp3',          // fitxer d'àudio, al mateix directori que aquesta pàgina
+  VOLUM_ARRENCADA:0.8,                   // de 0 a 1
+  SIRENES:true,                          // so de sirena quan apareix un vehicle d'emergència
 
-  /* ---- Trànsit dels carrers ---- */
-  TRANSIT_DES_DEL_NIVELL:7,           // nivell on comença el trànsit (posa 999 perquè no n'hi hagi mai)
-  TRANSIT_SEPARACIO_INICIAL:7.2,      // segons entre cotxes de cada carril quan comença el trànsit (més gran = menys cotxes)
-  TRANSIT_SEPARACIO_PER_NIVELL:0.62,  // segons que es redueix la separació a cada nivell (0 = el trànsit no augmenta mai)
-  TRANSIT_SEPARACIO_MINIMA:3.5,       // separació mínima: el màxim de trànsit que hi pot arribar a haver
-  TRANSIT_CARRIL_CONTRARI:1,          // multiplica la separació al carril contrari, el que no et fa perdre vides (2 = la meitat de cotxes)
-  TRANSIT_VELOCITAT:3.9,              // velocitat mínima dels cotxes, en caselles per segon
-  TRANSIT_VELOCITAT_VARIACIO:1.3,     // cada cotxe hi suma un valor a l'atzar entre 0 i aquest número
-  TRANSIT_VELOCITAT_PER_NIVELL:0.035, // velocitat extra per cada nivell
-  TRANSIT_VELOCITAT_EXTRA_MAXIMA:1.4, // límit d'aquesta velocitat extra
-  TRANSIT_CAMIONS:0.2,               // proporció de camions (0 = cap, 1 = tots)
-  //  TRANSIT_DES_DEL_NIVELL:3,           // nivell on comença el trànsit (posa 999 perquè no n'hi hagi mai)
-  // TRANSIT_SEPARACIO_INICIAL:5.2,      // segons entre cotxes de cada carril quan comença el trànsit (més gran = menys cotxes)
-  // TRANSIT_SEPARACIO_PER_NIVELL:0.12,  // segons que es redueix la separació a cada nivell (0 = el trànsit no augmenta mai)
-  // TRANSIT_SEPARACIO_MINIMA:1.5,       // separació mínima: el màxim de trànsit que hi pot arribar a haver
-  // TRANSIT_CARRIL_CONTRARI:1,          // multiplica la separació al carril contrari, el que no et fa perdre vides (2 = la meitat de cotxes)
-  // TRANSIT_VELOCITAT:2.4,              // velocitat mínima dels cotxes, en caselles per segon
-  // TRANSIT_VELOCITAT_VARIACIO:1.3,     // cada cotxe hi suma un valor a l'atzar entre 0 i aquest número
-  // TRANSIT_VELOCITAT_PER_NIVELL:0.035, // velocitat extra per cada nivell
-  // TRANSIT_VELOCITAT_EXTRA_MAXIMA:1.4, // límit d'aquesta velocitat extra
-  // TRANSIT_CAMIONS:0.15,               // proporció de camions (0 = cap, 1 = tots)
-
-  /* ---- Semàfors ---- */
-  SEMAFORS_DES_DEL_NIVELL:6,          // nivell on apareix el primer semàfor (en surten més als nivells següents)
-  SEMAFOR_VERD:9.5,                   // segons en verd
-  SEMAFOR_GROC:1.5,                   // segons en groc (encara es pot passar)
-  SEMAFOR_VERMELL:3.0,                // segons en vermell
-  //   SEMAFORS_DES_DEL_NIVELL:4,          // nivell on apareix el primer semàfor (en surten més als nivells següents)
-  // SEMAFOR_VERD:5.5,                   // segons en verd
-  // SEMAFOR_GROC:1.5,                   // segons en groc (encara es pot passar)
-  // SEMAFOR_VERMELL:4.5,                // segons en vermell
-
-  /* ---- Monedes ---- */
-  MONEDES_INICIALS:60,                // monedes en començar a jugar per primera vegada
-  PREU_PISTA:20,
-  PREU_BOMBA:40,
-  PREU_CONTINUAR:30,                  // preu de continuar amb 1 vida quan les perds totes
-  //   MONEDES_INICIALS:60,                // monedes en començar a jugar per primera vegada
-  // PREU_PISTA:20,
-  // PREU_BOMBA:40,
-  // PREU_CONTINUAR:30,                  // preu de continuar amb 1 vida quan les perds totes
-
-  /* ---- So ---- */
-  SO_ARRENCADA:'arrencadaCurta.mp3',       // fitxer d'àudio, al mateix directori que aquesta pàgina
-  VOLUM_ARRENCADA:0.5                 // de 0 a 1
-  //   SO_ARRENCADA:'arrencada.mp3',       // fitxer d'àudio, al mateix directori que aquesta pàgina
-  // VOLUM_ARRENCADA:0.8                 // de 0 a 1
+  /* ---- Una configuració per cada dificultat ---- */
+  DIFICULTATS:{
+    principiant:{
+      NOM:'Principiant',
+      VIDES:5,                           // vides a cada nivell
+      MONEDES_INICIALS:60,               // monedes en començar la partida
+      /* Temps */
+      TEMPS_PER_COTXE:5,                 // segons per cada vehicle aparcat
+      TEMPS_MARGE:30,                    // segons de marge d'aquesta dificultat
+      TEMPS_EXTRA_SEGONS:30,             // segons que compres quan s'acaba el temps
+      TEMPS_EXTRA_PREU:10,               // monedes que costa aquest temps extra
+      /* Preus */
+      PREU_BOMBA:40,
+      PREU_CONTINUAR:30,                 // continuar amb 1 vida quan les perds totes
+      /* Trànsit */
+      TRANSIT_DES_DEL_NIVELL:3,          // nivell on comença el trànsit (999 = mai)
+      TRANSIT_SEPARACIO_INICIAL:6,       // segons entre cotxes de cada carril (més gran = menys cotxes)
+      TRANSIT_SEPARACIO_PER_NIVELL:0.1,  // segons que es redueix la separació a cada nivell
+      TRANSIT_SEPARACIO_MINIMA:2.5,      // separació mínima: el màxim de trànsit
+      TRANSIT_CARRIL_CONTRARI:1.5,       // multiplica la separació al carril contrari (2 = la meitat de cotxes)
+      TRANSIT_VELOCITAT:2.2,             // velocitat mínima, en caselles per segon
+      TRANSIT_VELOCITAT_VARIACIO:1.0,    // cada cotxe hi suma un valor a l'atzar entre 0 i aquest
+      TRANSIT_VELOCITAT_PER_NIVELL:0.03, // velocitat extra per cada nivell
+      TRANSIT_VELOCITAT_EXTRA_MAXIMA:1.0,// límit d'aquesta velocitat extra
+      TRANSIT_CAMIONS:0.15,              // proporció de camions (0 = cap, 1 = tots)
+      /* Vehicles d'emergència (policia, ambulància, bombers) */
+      EMERGENCIA_PROBABILITAT:0.10,      // proporció del trànsit que són emergències (0 = cap)
+      VIDES_XOC_EMERGENCIA:2,            // vides que perds si hi xoques
+      /* Semàfors */
+      SEMAFORS_DES_DEL_NIVELL:5,         // nivell del primer semàfor (en surten més als nivells següents)
+      SEMAFOR_VERD:8.6,                    // segons en verd
+      SEMAFOR_GROC:1.5,                  // segons en groc (encara es pot passar)
+      SEMAFOR_VERMELL:3                  // segons en vermell
+    },
+    mitja:{
+      NOM:'Mitjà',
+      VIDES:4,
+      MONEDES_INICIALS:50,
+      TEMPS_PER_COTXE:3,
+      TEMPS_MARGE:20,
+      TEMPS_EXTRA_SEGONS:30,
+      TEMPS_EXTRA_PREU:15,
+      PREU_BOMBA:45,
+      PREU_CONTINUAR:40,
+      TRANSIT_DES_DEL_NIVELL:2,
+      TRANSIT_SEPARACIO_INICIAL:5,
+      TRANSIT_SEPARACIO_PER_NIVELL:0.12,
+      TRANSIT_SEPARACIO_MINIMA:2,
+      TRANSIT_CARRIL_CONTRARI:1.2,
+      TRANSIT_VELOCITAT:2.4,
+      TRANSIT_VELOCITAT_VARIACIO:1.3,
+      TRANSIT_VELOCITAT_PER_NIVELL:0.035,
+      TRANSIT_VELOCITAT_EXTRA_MAXIMA:1.4,
+      TRANSIT_CAMIONS:0.15,
+      EMERGENCIA_PROBABILITAT:0.07,
+      VIDES_XOC_EMERGENCIA:2,
+      SEMAFORS_DES_DEL_NIVELL:3,
+      SEMAFOR_VERD:6.5,
+      SEMAFOR_GROC:1.5,
+      SEMAFOR_VERMELL:4.0
+    },
+    alt:{
+      NOM:'Alt',
+      VIDES:3,
+      MONEDES_INICIALS:40,
+      TEMPS_PER_COTXE:2.5,
+      TEMPS_MARGE:12,
+      TEMPS_EXTRA_SEGONS:20,
+      TEMPS_EXTRA_PREU:15,
+      PREU_BOMBA:50,
+      PREU_CONTINUAR:50,
+      TRANSIT_DES_DEL_NIVELL:1,
+      TRANSIT_SEPARACIO_INICIAL:4.2,
+      TRANSIT_SEPARACIO_PER_NIVELL:0.15,
+      TRANSIT_SEPARACIO_MINIMA:1.6,
+      TRANSIT_CARRIL_CONTRARI:1,
+      TRANSIT_VELOCITAT:2.8,
+      TRANSIT_VELOCITAT_VARIACIO:1.4,
+      TRANSIT_VELOCITAT_PER_NIVELL:0.04,
+      TRANSIT_VELOCITAT_EXTRA_MAXIMA:1.6,
+      TRANSIT_CAMIONS:0.2,
+      EMERGENCIA_PROBABILITAT:0.09,
+      VIDES_XOC_EMERGENCIA:2,
+      SEMAFORS_DES_DEL_NIVELL:2,
+      SEMAFOR_VERD:5,
+      SEMAFOR_GROC:1.2,
+      SEMAFOR_VERMELL:5
+    },
+    superior:{
+      NOM:'Superior',
+      VIDES:2,
+      MONEDES_INICIALS:30,
+      TEMPS_PER_COTXE:2,
+      TEMPS_MARGE:6,
+      TEMPS_EXTRA_SEGONS:15,
+      TEMPS_EXTRA_PREU:20,
+      PREU_BOMBA:60,
+      PREU_CONTINUAR:60,
+      TRANSIT_DES_DEL_NIVELL:1,
+      TRANSIT_SEPARACIO_INICIAL:3.5,
+      TRANSIT_SEPARACIO_PER_NIVELL:0.18,
+      TRANSIT_SEPARACIO_MINIMA:1.3,
+      TRANSIT_CARRIL_CONTRARI:1,
+      TRANSIT_VELOCITAT:3.2,
+      TRANSIT_VELOCITAT_VARIACIO:1.5,
+      TRANSIT_VELOCITAT_PER_NIVELL:0.045,
+      TRANSIT_VELOCITAT_EXTRA_MAXIMA:1.8,
+      TRANSIT_CAMIONS:0.2,
+      EMERGENCIA_PROBABILITAT:0.12,
+      VIDES_XOC_EMERGENCIA:2,
+      SEMAFORS_DES_DEL_NIVELL:1,
+      SEMAFOR_VERD:4.5,
+      SEMAFOR_GROC:1,
+      SEMAFOR_VERMELL:5.5
+    }
+  }
 };
-
 /* ===================================================================== */
 var $=function(id){return document.getElementById(id);};
 var DIRS=[[0,-1],[1,0],[0,1],[-1,0]];
@@ -304,19 +426,20 @@ var HAIR=['#2A1E17','#5A3A22','#C9A56B','#1B1B1B','#8E8E8E'];
 var ROOFS=['#B8AFA6','#A9B6BC','#C7B8A3','#AEB9A7','#C9C2B8','#9FA8B3','#BFAE9B','#B3A7B5'];
 var RM=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
 var KEY='embus-v1';
-var HINT_COST=CONFIG.PREU_PISTA,BOMB_COST=CONFIG.PREU_BOMBA,CONT_COST=CONFIG.PREU_CONTINUAR,LIVES=Math.max(1,CONFIG.VIDES|0);
+/* valors de la dificultat escollida (es carreguen des de CONFIG.DIFICULTATS a applyDifficulty) */
+var D=null,BOMB_COST=0,CONT_COST=0,LIVES=3;
 /* geometria, en caselles: vorera/pas (B), carril (LW), carrer de 2 carrils (S) */
 var B=0.55,LW=0.75,S=LW*2,MARGIN=2.2;
-var T_GREEN=CONFIG.SEMAFOR_VERD,T_AMBER=CONFIG.SEMAFOR_GROC,T_RED=CONFIG.SEMAFOR_VERMELL,T_CYCLE=T_GREEN+T_AMBER+T_RED;
+var T_GREEN=5,T_AMBER=1.5,T_RED=4.5,T_CYCLE=11;
 var ACC=24,VMAX=9,TURN_R=0.55;
 /* trànsit dels carrers (caselles i segons) */
-var TRAFFIC_FROM=CONFIG.TRANSIT_DES_DEL_NIVELL,T_ACC=5,T_DEC=9,MERGED_VMAX=6.5;
+var TRAFFIC_FROM=3,T_ACC=5,T_DEC=9,MERGED_VMAX=6.5;
 var TRAFFIC_PAINTS=['#E9ECEF','#AEB6BD','#2B3138','#6E7780','#D2D7DB','#474F58'];
 var LCOL={green:'#35D07F',amber:'#F3C22F',red:'#FF4A3D'};
 var ASPHALT='#3A4048',LOT='#2F343B',PAVE='#D5DAD8',CURB='#EEF1F0',GLASS='#1C2730';
 
-var state={level:1,coins:CONFIG.MONEDES_INICIALS,sound:true,seenLights:false,seenTraffic:false};
-function load(){try{var s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.level>0){state.level=s.level|0;state.coins=Math.max(0,s.coins|0);state.sound=s.sound!==false;state.seenLights=!!s.seenLights;state.seenTraffic=!!s.seenTraffic;}}catch(e){}}
+var state={level:1,coins:0,sound:true,seenLights:false,seenTraffic:false,diff:null};
+function load(){try{var s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.level>0){state.level=s.level|0;state.coins=Math.max(0,s.coins|0);state.sound=s.sound!==false;state.seenLights=!!s.seenLights;state.seenTraffic=!!s.seenTraffic;state.diff=(typeof s.diff==='string')?s.diff:null;}}catch(e){}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
 
 /* ---------- aleatori determinista ---------- */
@@ -373,7 +496,7 @@ function generate(n,w,h){
   stuckAfterGreedy(cars,w,h).forEach(function(c){cars.splice(cars.indexOf(c),1);});
   var last=-1;
   cars.forEach(function(c,i){c.id=i;var k;do{k=Math.floor(r()*PAINTS.length);}while(k===last);last=k;c.color=PAINTS[k];});
-  var lf=CONFIG.SEMAFORS_DES_DEL_NIVELL,nl=n<lf?0:n<lf+4?1:n<lf+10?2:n<lf+18?3:4;
+  var lf=D.SEMAFORS_DES_DEL_NIVELL,nl=n<lf?0:n<lf+4?1:n<lf+10?2:n<lf+18?3:4;
   var sides=shuffle([0,1,2,3],r).slice(0,nl);
   var lights=sides.map(function(s){return{side:s,off:r()*T_CYCLE,peds:[],nextPed:0,flashT:-1e9};});
   return{w:w,h:h,cars:cars,lights:lights};
@@ -474,13 +597,17 @@ var sfx={
   crash:function(){noise(0.3,0.45,900);tone(392,392,0.18,'square',0.035,0.05);tone(494,494,0.18,'square',0.03,0.05);},
   whistle:function(){tone(2300,2150,0.14,'square',0.03);tone(2300,2150,0.3,'square',0.03,0.18);},
   boom:function(){noise(0.7,0.7,420);tone(110,35,0.6,'sine',0.25);},
-  hint:function(){tone(880,1320,0.18,'triangle',0.08);},
+  tick:function(){tone(1250,1250,0.05,'square',0.025);},
+  siren:function(){if(!CONFIG.SIRENES)return;for(var i=0;i<4;i++){var f=i%2?960:720;tone(f,f,0.22,'triangle',0.03,i*0.24);}},
   win:function(){[523,659,784,1047].forEach(function(f,i){tone(f,f,0.22,'triangle',0.09,i*0.09);});},
   lose:function(){tone(300,120,0.6,'sawtooth',0.06);}
 };
 
 /* ---------- estat de la partida ---------- */
 var G=null,cw=0,ch=0,cs=40,ox=0,oy=0,dpr=1,showCursor=false,lastNow=0;
+/* rellotge del joc: només avança quan el joc no està aturat (pausa, menú, finestres) */
+var clock=0,lastReal=0,paused=false;
+function frozen(){return paused||!$('menuO').hidden||!$('helpO').hidden||!$('timeO').hidden||!$('diffO').hidden||!$('zeroO').hidden;}
 var cv=$('cv'),ctx=cv.getContext('2d'),stage=$('stage');
 var bgc=document.createElement('canvas'),bgx=bgc.getContext('2d');
 function X(u){return ox+u*cs;}
@@ -490,8 +617,8 @@ function carCenter(c){var d=DIRS[c.d],tx=c.x-d[0]*(c.L-1),ty=c.y-d[1]*(c.L-1);re
 function newLevel(){
   var dims=chooseDims(state.level);
   var L=generate(state.level,dims.w,dims.h);
-  var now=performance.now();
-  G={w:L.w,h:L.h,cars:L.cars,byId:{},grid:[],hearts:LIVES,over:false,hintId:null,bombMode:false,parts:[],shakeT:-1e9,cursor:{x:0,y:0},t0:now,lights:L.lights,lightBySide:{}};
+  var now=clock;
+  G={w:L.w,h:L.h,cars:L.cars,byId:{},grid:[],hearts:LIVES,over:false,timeLeft:0,timeUp:false,lastSec:-1,bombMode:false,parts:[],shakeT:-1e9,cursor:{x:0,y:0},t0:now,lights:L.lights,lightBySide:{}};
   for(var y=0;y<G.h;y++){G.grid.push([]);for(var x=0;x<G.w;x++)G.grid[y].push(null);}
   G.lights.forEach(function(l){G.lightBySide[l.side]=l;});
   buildStreets();
@@ -500,9 +627,10 @@ function newLevel(){
     c.appearT=RM?now-1000:now+120+(c.x+c.y)*40;
     carCells(c).forEach(function(p){G.grid[p[1]][p[0]]=c.id;});
   });
-  $('winO').hidden=true;$('loseO').hidden=true;
+  G.timeLeft=levelTime(G.cars.length);
+  $('winO').hidden=true;$('loseO').hidden=true;$('timeO').hidden=true;
   setBomb(false);
-  resize();warmTraffic(now);updateHUD();
+  resize();warmTraffic(now);updateHUD();renderTimer();
   if(G.trafficOn&&!state.seenTraffic){
     state.seenTraffic=true;save();
     setTimeout(function(){toast('Nou: trànsit! Espera un buit al carrer abans de fer sortir un vehicle.',4200);},600);
@@ -519,14 +647,25 @@ function heartSVG(cls){return '<svg class="'+cls+'" viewBox="0 0 24 24" aria-hid
 function updateHUD(lostIdx){
   $('lvl').textContent=state.level;
   $('coins').textContent=state.coins;
-  var hs='';
-  if(LIVES<=6){for(var i=0;i<LIVES;i++)hs+=heartSVG((i<G.hearts?'on':'off')+(i===lostIdx?' lost':''));}
-  else hs=heartSVG((G.hearts>0?'on':'off')+(lostIdx!==undefined?' lost':''))+'<b class="hcount">'+G.hearts+'</b>';
-  $('hearts').innerHTML=hs;$('hearts').setAttribute('aria-label',G.hearts+' vides');
+  /* dues versions: tots els cors (pantalla ampla) o un sol cor amb el número (mòbil, o més de 6 vides) */
+  var full='',one=heartSVG((G.hearts>0?'on':'off')+(lostIdx!==undefined?' lost':''))+'<b class="hcount">'+G.hearts+'</b>';
+  if(LIVES<=6){for(var i=0;i<LIVES;i++)full+=heartSVG((i<G.hearts?'on':'off')+(i===lostIdx?' lost':''));}
+  else full=one;
+  $('hearts').innerHTML='<span class="hfull">'+full+'</span><span class="hcompact">'+one+'</span>';$('hearts').setAttribute('aria-label',G.hearts+' vides');
   var n=G.cars.filter(function(c){return!(c.anim&&c.anim.type==='exit');}).length;
-  $('left').innerHTML=n===1?'Queda <b>1</b> vehicle':'Queden <b>'+n+'</b> vehicles';
-  $('hintBtn').classList.toggle('poor',state.coins<HINT_COST);
-  $('bombBtn').classList.toggle('poor',state.coins<BOMB_COST&&!G.bombMode);
+  $('left').innerHTML='<span class="lfull">'+(n===1?'Queda <b>1</b> vehicle':'Queden <b>'+n+'</b> vehicles')+'</span><span class="lcompact"><svg class="caricon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 11 8.3 6.6Q8.6 6 9.3 6h5.4q.7 0 1 .6L17.4 11z" fill="currentColor"/><path d="M8.9 10.2 10 7.5h4l1.1 2.7z" fill="#D3DAD9"/><rect x="2.5" y="10.3" width="19" height="5.6" rx="2" fill="currentColor"/><circle cx="7.3" cy="16.3" r="2.3" fill="currentColor" stroke="#D3DAD9" stroke-width="1.3"/><circle cx="16.7" cy="16.3" r="2.3" fill="currentColor" stroke="#D3DAD9" stroke-width="1.3"/></svg><b>'+n+'</b></span>';
+  $('left').setAttribute('aria-label',n===1?'Queda 1 vehicle':'Queden '+n+' vehicles');
+}
+/* temps de cada nivell: fix + vehicles × segons per vehicle + marge de la dificultat */
+function levelTime(n){return Math.ceil(CONFIG.TEMPS_FIX+n*D.TEMPS_PER_COTXE+D.TEMPS_MARGE);}
+function fmtTime(s){s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2);}
+function renderTimer(){$('time').textContent=fmtTime(G.timeLeft);$('timer').classList.toggle('low',G.timeLeft<=10&&!G.over);}
+function timeUp(){
+  G.timeUp=true;setBomb(false);sfx.lose();
+  var can=state.coins>=D.TEMPS_EXTRA_PREU,n=G.cars.filter(function(c){return!(c.anim&&c.anim.type==='exit');}).length;
+  $('buyTime').hidden=!can;
+  $('timeTxt').textContent=(n===1?'Encara queda 1 vehicle. ':'Encara queden '+n+' vehicles. ')+(can?'Pots comprar '+D.TEMPS_EXTRA_SEGONS+' segons més per '+D.TEMPS_EXTRA_PREU+' monedes.':'No tens prou monedes per comprar temps (en calen '+D.TEMPS_EXTRA_PREU+').');
+  $('timeO').hidden=false;(can?$('buyTime'):$('timeRetry')).focus();
 }
 
 var toastTimer=0;
@@ -552,7 +691,6 @@ function startExit(c,now){
   else if(c.d===2)dist=(G.h+B+LW/2)-ctr.y;
   else dist=ctr.x-(-B-LW/2);
   c.anim={type:'exit',t0:now,sx:ctr.x,sy:ctr.y,d:c.d,D1:Math.max(0,dist-TURN_R),r:TURN_R,s:0,v:0,merged:false};
-  if(G.hintId===c.id)G.hintId=null;
   sfx.go();updateHUD();
 }
 function exitPose(a,s){
@@ -572,7 +710,7 @@ function tapCell(x,y){
   var id=G.grid[y][x];if(id===null)return;
   var c=G.byId[id];if(!c||c.anim)return;
   if(G.bombMode){explode(c);return;}
-  var p=pathInfo(c),now=performance.now();
+  var p=pathInfo(c),now=clock;
   if(p.blocked){
     c.anim={type:'bump',phase:'go',t0:now,dur:90+p.k*55,k:p.k+0.14,blocker:p.blocker};
     return;
@@ -585,7 +723,7 @@ function tapCell(x,y){
   startExit(c,now);
 }
 
-function loseHeart(){var lost=G.hearts-1;G.hearts=Math.max(0,G.hearts-1);if(G.hearts<=0)G.over=true;updateHUD(lost);try{if(navigator.vibrate)navigator.vibrate(60);}catch(e){}}
+function loseHeart(n){n=n||1;var lost=G.hearts-1;G.hearts=Math.max(0,G.hearts-n);if(G.hearts<=0)G.over=true;updateHUD(lost);try{if(navigator.vibrate)navigator.vibrate(60);}catch(e){}}
 function crash(c,b,now){
   b.shakeT=now;G.shakeT=now;
   var d=DIRS[c.d],ctr=carCenter(c);
@@ -607,38 +745,20 @@ function explode(c){
   for(i=0;i<26;i++){a=Math.random()*Math.PI*2;v=40+Math.random()*200;G.parts.push({kind:'fire',x:px,y:py,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:0,max:0.45+Math.random()*0.35,r:cs*(0.12+Math.random()*0.18)});}
   for(i=0;i<12;i++){a=Math.random()*Math.PI*2;v=150+Math.random()*260;G.parts.push({kind:'debris',x:px,y:py,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:0,max:0.6+Math.random()*0.3,col:c.color,rot:Math.random()*6,vr:(Math.random()-0.5)*20});}
   G.cars.splice(G.cars.indexOf(c),1);delete G.byId[c.id];
-  if(G.hintId===c.id)G.hintId=null;
-  G.shakeT=performance.now();sfx.boom();
+  G.shakeT=clock;sfx.boom();
   setBomb(false);updateHUD();checkWin();
 }
 
 function setBomb(on){
   if(G)G.bombMode=on;
-  $('bombBtn').setAttribute('aria-pressed',on?'true':'false');
-  $('bombLbl').textContent=on?'Cancel·la':'Bomba';
-  $('bombCost').hidden=on;
+  $('bombPill').hidden=!on;
 }
 function toggleBomb(){
   if(!G||G.over)return;
   if(G.bombMode){setBomb(false);return;}
   if(state.coins<BOMB_COST){toast('Necessites '+BOMB_COST+' monedes per a una bomba.');return;}
-  setBomb(true);toast('Toca el vehicle que vols fer explotar.');
+  setBomb(true);
 }
-function useHint(){
-  if(!G||G.over)return;
-  if(G.hintId!==null&&G.byId[G.hintId]){toast('Ja tens una pista marcada en groc.');return;}
-  if(state.coins<HINT_COST){toast('Necessites '+HINT_COST+' monedes per a una pista.');return;}
-  var now=performance.now();
-  var free=G.cars.filter(function(c){return!c.anim&&!pathInfo(c).blocked;});
-  if(!free.length)return;
-  var green=free.filter(function(c){var L=G.lightBySide[c.d];return!L||lightState(L,now)!=='red';});
-  var pool=green.length?green:free;
-  state.coins-=HINT_COST;save();
-  G.hintId=pool[Math.floor(Math.random()*pool.length)].id;
-  sfx.hint();updateHUD();
-  if(!green.length)toast('Aquest pot sortir, però espera el verd.');
-}
-
 function checkWin(){
   if(G.over)return;
   if(!G.cars.every(function(c){return c.anim&&c.anim.type==='exit'&&c.anim.merged;}))return;
@@ -655,7 +775,7 @@ function checkWin(){
   },800);
 }
 function lose(){
-  sfx.lose();
+  sfx.lose();renderTimer();
   $('contBtn').hidden=state.coins<CONT_COST;
   $('loseO').hidden=false;$('retryBtn').focus();
 }
@@ -680,20 +800,24 @@ function buildStreets(){
   });});
   G.movers=[];G.tid=0;
   G.trafficOn=state.level>=TRAFFIC_FROM;
-  G.trafficGap=Math.max(CONFIG.TRANSIT_SEPARACIO_MINIMA,CONFIG.TRANSIT_SEPARACIO_INICIAL-CONFIG.TRANSIT_SEPARACIO_PER_NIVELL*(state.level-TRAFFIC_FROM));
-  G.trafficSpeed=Math.min(CONFIG.TRANSIT_VELOCITAT_EXTRA_MAXIMA,state.level*CONFIG.TRANSIT_VELOCITAT_PER_NIVELL);
+  G.trafficGap=Math.max(D.TRANSIT_SEPARACIO_MINIMA,D.TRANSIT_SEPARACIO_INICIAL-D.TRANSIT_SEPARACIO_PER_NIVELL*(state.level-TRAFFIC_FROM));
+  G.trafficSpeed=Math.min(D.TRANSIT_VELOCITAT_EXTRA_MAXIMA,state.level*D.TRANSIT_VELOCITAT_PER_NIVELL);
 }
 function laneRange(l){return l.axis==='h'?[-ox/cs,(cw-ox)/cs]:[-oy/cs,(ch-oy)/cs];}
 function moverPose(m){var l=m.lane;return l.axis==='h'?{x:m.p,y:l.coord,ang:l.dir>0?Math.PI/2:Math.PI*1.5}:{x:l.coord,y:m.p,ang:l.dir>0?Math.PI:0};}
 function releaseBoxes(m){G.boxes.forEach(function(b){if(b.set[m.id]){delete b.set[m.id];b.n--;if(b.n<=0){b.n=0;b.axis=null;}}});}
 function spawnTraffic(l,now){
-  var L=Math.random()<CONFIG.TRANSIT_CAMIONS?3:2,rg=laneRange(l);
+  var kind=null,L;
+  if(Math.random()<D.EMERGENCIA_PROBABILITAT){kind=['police','ambulance','fire'][Math.floor(Math.random()*3)];L=kind==='fire'?3:2;}
+  else L=Math.random()<D.TRANSIT_CAMIONS?3:2;
+  var rg=laneRange(l);
   var p=l.dir>0?rg[0]-L:rg[1]+L;
   var clear=G.movers.every(function(m){return m.lane!==l||Math.abs(m.p-p)>L/2+m.L/2+1.2;});
   if(!clear){l.next=now+400;return;}
-  var vmax=CONFIG.TRANSIT_VELOCITAT+Math.random()*CONFIG.TRANSIT_VELOCITAT_VARIACIO+G.trafficSpeed;
-  G.movers.push({id:'t'+(G.tid++),lane:l,p:p,v:vmax,vmax:vmax,L:L,traffic:true,color:TRAFFIC_PAINTS[Math.floor(Math.random()*TRAFFIC_PAINTS.length)],shakeT:-1e9,stopUntil:0});
-  l.next=now+(0.45+Math.random()*1.1)*G.trafficGap*1000*(l.side<0?CONFIG.TRANSIT_CARRIL_CONTRARI:1);
+  var vmax=D.TRANSIT_VELOCITAT+Math.random()*D.TRANSIT_VELOCITAT_VARIACIO+G.trafficSpeed+(kind?0.8:0);
+  G.movers.push({id:'t'+(G.tid++),lane:l,p:p,v:vmax,vmax:vmax,L:L,traffic:true,kind:kind,color:TRAFFIC_PAINTS[Math.floor(Math.random()*TRAFFIC_PAINTS.length)],shakeT:-1e9,stopUntil:0});
+  if(kind&&!G.warming)sfx.siren();
+  l.next=now+(0.45+Math.random()*1.1)*G.trafficGap*1000*(l.side<0?D.TRANSIT_CARRIL_CONTRARI:1);
 }
 function stepMover(m,dt,now){
   var lane=m.lane,dir=lane.dir,front=m.p+dir*m.L/2,rear=m.p-dir*m.L/2,limit=Infinity,i;
@@ -750,9 +874,11 @@ function updateTraffic(now,dt){
 }
 function warmTraffic(now){
   if(!G.trafficOn)return;
+  G.warming=true;
   var t=now-7000;
   G.lanes.forEach(function(l){l.next=t+Math.random()*G.trafficGap*1000;});
   for(;t<now;t+=50)updateTraffic(t,0.05);
+  G.warming=false;
 }
 /* punt on un cotxe que surt s'atura, amb el morro just abans del carril */
 function holdPoint(c){var a=c.anim;return Math.max(0,a.D1+a.r-c.L/2-LW/2-0.05);}
@@ -816,8 +942,9 @@ function hitTraffic(c,m,pt,now){
   G.shakeT=now;
   var px=X(pt[0]),py=Y(pt[1]);
   for(var i=0;i<16;i++){var an=Math.random()*Math.PI*2,v=120+Math.random()*240;G.parts.push({kind:'spark',x:px,y:py,vx:Math.cos(an)*v,vy:Math.sin(an)*v,life:0,max:0.35+Math.random()*0.25});}
-  sfx.crash();loseHeart();
-  toast('Compte amb el trànsit! Has perdut una vida.');
+  var lost=m.kind?Math.max(1,D.VIDES_XOC_EMERGENCIA|0):1;
+  sfx.crash();loseHeart(lost);
+  toast(m.kind?('Has xocat amb un vehicle d’emergència! Perds '+lost+(lost===1?' vida.':' vides.')):'Compte amb el trànsit! Has perdut una vida.');
 }
 
 /* ---------- actualització ---------- */
@@ -872,6 +999,13 @@ function update(now){
   updateTraffic(now,dt);
   checkTrafficHits(now);
   checkWin();
+  /* compte enrere */
+  if(!G.over&&!G.timeUp){
+    G.timeLeft-=dt;
+    var sec=Math.max(0,Math.ceil(G.timeLeft));
+    if(sec!==G.lastSec){G.lastSec=sec;renderTimer();if(sec<=10&&sec>0)sfx.tick();}
+    if(G.timeLeft<=0&&G.cars.some(function(c){return!(c.anim&&c.anim.type==='exit');}))timeUp();
+  }
   /* vianants: creuen mentre el semàfor dels cotxes és vermell */
   G.lights.forEach(function(L){
     var st=lightState(L,now),len=sideLen(L.side);
@@ -1137,6 +1271,56 @@ function drawTruck(W,Lp,col,noArrow){
   if(!noArrow)chevron(0,y0+bh/2,W*0.5,col);
 }
 
+/* vehicles d'emergència: policia, ambulància i bombers, amb llums intermitents */
+function lightBar(y,w,h,now,c1,c2){
+  var ph=Math.floor(now/160)%2;
+  ctx.fillStyle='#20262C';rr(ctx,-w/2,y,w,h,h*0.45);ctx.fill();
+  ctx.save();
+  ctx.shadowColor=c1;ctx.shadowBlur=ph===0?cs*0.5:0;ctx.fillStyle=ph===0?c1:'rgba(255,255,255,.2)';
+  rr(ctx,-w/2+w*0.05,y+h*0.18,w*0.42,h*0.64,h*0.3);ctx.fill();
+  ctx.shadowColor=c2;ctx.shadowBlur=ph===1?cs*0.5:0;ctx.fillStyle=ph===1?c2:'rgba(255,255,255,.2)';
+  rr(ctx,w*0.03,y+h*0.18,w*0.42,h*0.64,h*0.3);ctx.fill();
+  ctx.restore();
+}
+function lamps(W,Lp){
+  ctx.fillStyle='#FFF3BF';rr(ctx,-W*0.42,-Lp/2+cs*0.03,W*0.24,cs*0.05,2);ctx.fill();rr(ctx,W*0.18,-Lp/2+cs*0.03,W*0.24,cs*0.05,2);ctx.fill();
+  ctx.fillStyle='#FF3B30';rr(ctx,-W*0.42,Lp/2-cs*0.08,W*0.22,cs*0.05,2);ctx.fill();rr(ctx,W*0.2,Lp/2-cs*0.08,W*0.22,cs*0.05,2);ctx.fill();
+}
+function drawEmergency(W,Lp,kind,now){
+  if(kind==='police'){
+    drawSedan(W,Lp,'#F4F6F8',true);
+    ctx.fillStyle='#1E2F5C';
+    rr(ctx,-W/2,-Lp/2,W,Lp*0.19,W*0.3);ctx.fill();
+    rr(ctx,-W/2,Lp/2-Lp*0.19,W,Lp*0.19,W*0.3);ctx.fill();
+    ctx.fillRect(-W/2,-Lp*0.1,W*0.09,Lp*0.3);ctx.fillRect(W/2-W*0.09,-Lp*0.1,W*0.09,Lp*0.3);
+    lamps(W,Lp);
+    lightBar(-Lp*0.04,W*0.86,cs*0.14,now,'#2F6BFF','#FF3B3B');
+  }else if(kind==='ambulance'){
+    ctx.fillStyle='#F7F7F4';rr(ctx,-W/2,-Lp/2,W,Lp,W*0.2);ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,.12)';ctx.lineWidth=Math.max(1,cs*0.02);ctx.stroke();
+    ctx.fillStyle=GLASS;rr(ctx,-W*0.38,-Lp/2+Lp*0.07,W*0.76,Lp*0.13,3);ctx.fill();
+    ctx.fillStyle='#E0312B';
+    ctx.fillRect(-W/2,-Lp/2+Lp*0.3,W*0.1,Lp*0.62);ctx.fillRect(W/2-W*0.1,-Lp/2+Lp*0.3,W*0.1,Lp*0.62);
+    var cy=Lp*0.14,cl=W*0.46,ct=W*0.15;
+    ctx.fillRect(-cl/2,cy-ct/2,cl,ct);ctx.fillRect(-ct/2,cy-cl/2,ct,cl);
+    lamps(W,Lp);
+    lightBar(-Lp/2+Lp*0.23,W*0.86,cs*0.13,now,'#2F6BFF','#F4F4F4');
+  }else{
+    var cab=cs*0.85;
+    ctx.fillStyle='#B81E17';rr(ctx,-W*0.5,-Lp/2+cab+cs*0.04,W,Lp-cab-cs*0.04,W*0.08);ctx.fill();
+    ctx.fillStyle='#D5DADF';
+    var ry0=-Lp/2+cab+cs*0.14,ry1=Lp/2-cs*0.14;
+    ctx.fillRect(-W*0.26,ry0,W*0.07,ry1-ry0);ctx.fillRect(W*0.19,ry0,W*0.07,ry1-ry0);
+    ctx.strokeStyle='#D5DADF';ctx.lineWidth=Math.max(1,W*0.05);ctx.beginPath();
+    for(var y=ry0+cs*0.12;y<ry1;y+=cs*0.2){ctx.moveTo(-W*0.22,y);ctx.lineTo(W*0.22,y);}ctx.stroke();
+    var g=ctx.createLinearGradient(-W/2,0,W/2,0);
+    g.addColorStop(0,'#A5170F');g.addColorStop(0.3,'#E8392F');g.addColorStop(0.7,'#D7261E');g.addColorStop(1,'#9E150E');
+    ctx.fillStyle=g;rr(ctx,-W*0.48,-Lp/2,W*0.96,cab,W*0.22);ctx.fill();
+    ctx.fillStyle=GLASS;rr(ctx,-W*0.37,-Lp/2+cab*0.18,W*0.74,cab*0.24,3);ctx.fill();
+    lamps(W,Lp);
+    lightBar(-Lp/2+cab*0.58,W*0.86,cs*0.13,now,'#2F6BFF','#FF3B3B');
+  }
+}
 function drawTraffic(m,now){
   var ps=moverPose(m),px=X(ps.x),py=Y(ps.y);
   var st=(now-m.shakeT)/320;
@@ -1146,7 +1330,8 @@ function drawTraffic(m,now){
   ctx.save();ctx.translate(px+cs*0.03,py+cs*0.08);ctx.rotate(ps.ang);
   ctx.fillStyle='rgba(0,0,0,.38)';rr(ctx,-W/2,-Lp/2,W,Lp,W*0.3);ctx.fill();ctx.restore();
   ctx.translate(px,py);ctx.rotate(ps.ang);
-  if(m.L===3)drawTruck(W,Lp,m.color,true);else drawSedan(W,Lp,m.color,true);
+  if(m.kind)drawEmergency(W,Lp,m.kind,now);
+  else if(m.L===3)drawTruck(W,Lp,m.color,true);else drawSedan(W,Lp,m.color,true);
   if(m.braking){
     ctx.fillStyle='rgba(255,40,30,.95)';ctx.shadowColor='#FF2A1E';ctx.shadowBlur=cs*0.3;
     rr(ctx,-W*0.44,Lp/2-cs*0.08,W*0.24,cs*0.06,2);ctx.fill();rr(ctx,W*0.2,Lp/2-cs*0.08,W*0.24,cs*0.06,2);ctx.fill();
@@ -1169,11 +1354,6 @@ function drawCar(c,now){
   ctx.save();ctx.translate(px+cs*0.03,py+cs*0.08);ctx.rotate(ang);ctx.scale(s,s);
   ctx.fillStyle='rgba(0,0,0,.38)';rr(ctx,-W/2,-Lp/2,W,Lp,W*0.3);ctx.fill();ctx.restore();
   ctx.translate(px,py);ctx.rotate(ang);ctx.scale(s,s);
-  if(G.hintId===c.id){
-    var p=0.5+0.5*Math.sin(now/160);
-    ctx.strokeStyle='rgba(243,194,47,'+(0.5+0.5*p)+')';ctx.lineWidth=cs*(0.06+0.03*p);
-    rr(ctx,-W/2-cs*0.09,-Lp/2-cs*0.09,W+cs*0.18,Lp+cs*0.18,W*0.4);ctx.stroke();
-  }
   if(G.bombMode&&!c.anim){
     ctx.save();ctx.setLineDash([cs*0.1,cs*0.08]);ctx.lineDashOffset=-now/40;
     ctx.strokeStyle='rgba(255,90,70,.95)';ctx.lineWidth=cs*0.045;
@@ -1215,7 +1395,11 @@ function draw(now){
   ctx.restore();
 }
 
-function loop(now){if(G){update(now);draw(now);}requestAnimationFrame(loop);}
+function loop(real){
+  var d=Math.min(50,Math.max(0,real-lastReal));lastReal=real;
+  if(G){if(!frozen()){clock+=d;update(clock);}draw(clock);}
+  requestAnimationFrame(loop);
+}
 
 function resize(){
   if(!G)return;
@@ -1236,54 +1420,137 @@ cv.addEventListener('pointerdown',function(e){
 });
 document.addEventListener('keydown',function(e){
   if(!G)return;
-  var anyOverlay=!$('winO').hidden||!$('loseO').hidden||!$('helpO').hidden||!$('zeroO').hidden;
-  if(anyOverlay){if(e.key==='Escape'){if(!$('helpO').hidden)$('helpO').hidden=true;if(!$('zeroO').hidden)$('zeroO').hidden=true;}return;}
+  var k=e.key.toLowerCase();
+  if(!$('pauseO').hidden){if(k==='p'||k==='escape'){e.preventDefault();setPaused(false);}return;}
+  if(!$('menuO').hidden){if(k==='escape'||k==='m'){e.preventDefault();closeMenu();}return;}
+  if(!$('helpO').hidden){if(k==='escape'){$('helpO').hidden=true;cv.focus();}return;}
+  if(!$('zeroO').hidden){if(k==='escape'){$('zeroO').hidden=true;cv.focus();}return;}
+  if(!$('winO').hidden||!$('loseO').hidden||!$('timeO').hidden||!$('diffO').hidden)return;
   var mv={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[e.key];
   if(mv){e.preventDefault();ac();showCursor=true;G.cursor.x=Math.max(0,Math.min(G.w-1,G.cursor.x+mv[0]));G.cursor.y=Math.max(0,Math.min(G.h-1,G.cursor.y+mv[1]));return;}
   var ae=document.activeElement;
   if((e.key===' '||e.key==='Enter')&&ae&&ae.tagName==='BUTTON')return;
   if(e.key===' '||e.key==='Enter'){e.preventDefault();showCursor=true;tapCell(G.cursor.x,G.cursor.y);return;}
-  var k=e.key.toLowerCase();
-  if(k==='p')useHint();else if(k==='b')toggleBomb();else if(k==='r')newLevel();else if(k==='escape'&&G.bombMode)setBomb(false);
+  if(k==='p')setPaused(true);
+  else if(k==='m')openMenu();
+  else if(k==='b')toggleBomb();
+  else if(k==='r')newLevel();
+  else if(k==='escape'&&G.bombMode)setBomb(false);
 });
-$('hintBtn').addEventListener('click',function(){ac();useHint();});
-$('bombBtn').addEventListener('click',function(){ac();toggleBomb();});
-$('resetBtn').addEventListener('click',function(){ac();newLevel();});
+
+/* pausa */
+function setPaused(p){
+  paused=p;$('pauseO').hidden=!p;
+  if(p)$('resumeBtn').focus();else cv.focus();
+}
+$('pauseBtn').addEventListener('click',function(){ac();setPaused(true);});
+$('resumeBtn').addEventListener('click',function(){setPaused(false);});
+document.addEventListener('visibilitychange',function(){if(document.hidden&&G&&!G.over&&!frozen())setPaused(true);});
+
+/* menú */
+function openMenu(){
+  $('menuDiff').textContent=D.NOM;
+  $('mBomb').classList.toggle('poor',state.coins<BOMB_COST);
+  renderSound();
+  $('menuO').hidden=false;$('menuClose').focus();
+}
+function closeMenu(){$('menuO').hidden=true;cv.focus();}
+$('menuBtn').addEventListener('click',function(){ac();openMenu();});
+$('menuClose').addEventListener('click',closeMenu);
+$('mBomb').addEventListener('click',function(){closeMenu();toggleBomb();});
+$('mRestart').addEventListener('click',function(){closeMenu();newLevel();});
+$('mHelp').addEventListener('click',function(){$('menuO').hidden=true;$('helpO').hidden=false;$('helpClose').focus();});
+$('mZero').addEventListener('click',function(){$('menuO').hidden=true;askZero();});
+function renderSound(){$('soundBtn').setAttribute('aria-pressed',state.sound?'true':'false');$('soundLbl').textContent=state.sound?'So: activat':'So: desactivat';$('waves').style.display=state.sound?'':'none';$('mute').style.display=state.sound?'none':'';}
+$('soundBtn').addEventListener('click',function(){state.sound=!state.sound;save();renderSound();if(state.sound)ac();});
+$('bombPill').addEventListener('click',function(){setBomb(false);cv.focus();});
+
+/* finestres de final de nivell */
 $('nextBtn').addEventListener('click',function(){newLevel();cv.focus();});
 $('retryBtn').addEventListener('click',function(){newLevel();cv.focus();});
 $('contBtn').addEventListener('click',function(){
   if(state.coins<CONT_COST)return;
   state.coins-=CONT_COST;save();G.hearts=1;G.over=false;$('loseO').hidden=true;updateHUD();cv.focus();
 });
-$('helpBtn').addEventListener('click',function(){$('helpO').hidden=false;$('helpClose').focus();});
-$('helpClose').addEventListener('click',function(){$('helpO').hidden=true;cv.focus();});
-/* començar des de zero: nivell 1 i monedes inicials (demana confirmació) */
-function askZero(){$('helpO').hidden=true;$('zeroO').hidden=false;$('zeroNo').focus();}
-$('zeroBtn').addEventListener('click',askZero);
-$('helpZero').addEventListener('click',askZero);
-$('zeroNo').addEventListener('click',function(){$('zeroO').hidden=true;cv.focus();});
-$('zeroYes').addEventListener('click',function(){
-  state.level=1;state.coins=CONFIG.MONEDES_INICIALS;state.seenLights=false;state.seenTraffic=false;save();
-  $('zeroO').hidden=true;newLevel();cv.focus();
-  toast('Partida nova: tornes a començar pel nivell 1.');
+$('buyTime').addEventListener('click',function(){
+  if(state.coins<D.TEMPS_EXTRA_PREU)return;
+  state.coins-=D.TEMPS_EXTRA_PREU;save();
+  G.timeLeft=Math.max(0,G.timeLeft)+D.TEMPS_EXTRA_SEGONS;G.timeUp=false;G.lastSec=-1;
+  $('timeO').hidden=true;updateHUD();renderTimer();cv.focus();
+  toast('+'+D.TEMPS_EXTRA_SEGONS+' segons');
 });
-function renderSound(){$('soundBtn').setAttribute('aria-pressed',state.sound?'true':'false');$('waves').style.display=state.sound?'':'none';$('mute').style.display=state.sound?'none':'';}
-$('soundBtn').addEventListener('click',function(){state.sound=!state.sound;save();renderSound();if(state.sound)ac();});
+$('timeRetry').addEventListener('click',function(){newLevel();cv.focus();});
+$('helpClose').addEventListener('click',function(){$('helpO').hidden=true;cv.focus();});
+
+/* començar des de zero: demana confirmació i després deixa triar la dificultat */
+function askZero(){$('helpO').hidden=true;$('zeroO').hidden=false;$('zeroNo').focus();}
+$('zeroNo').addEventListener('click',function(){$('zeroO').hidden=true;cv.focus();});
+$('zeroYes').addEventListener('click',function(){$('zeroO').hidden=true;openDiff();});
+
+/* ---------- dificultats ---------- */
+var diffSel=null;
+function num(x){return String(x).replace('.',',');}
+function diffInfo(d){
+  var s=d.VIDES+(d.VIDES===1?' vida':' vides')+' · '+num(d.TEMPS_PER_COTXE)+' s per vehicle + '+num(d.TEMPS_MARGE)+' s de marge';
+  s+=' · trànsit '+(d.TRANSIT_DES_DEL_NIVELL<=1?'des del principi':'des del nivell '+d.TRANSIT_DES_DEL_NIVELL);
+  s+=' · semàfors '+(d.SEMAFORS_DES_DEL_NIVELL<=1?'des del principi':'des del nivell '+d.SEMAFORS_DES_DEL_NIVELL);
+  return s;
+}
+function renderDiffs(){
+  var list=$('diffList'),html='';
+  Object.keys(CONFIG.DIFICULTATS).forEach(function(key){
+    var d=CONFIG.DIFICULTATS[key];
+    html+='<button class="diff" role="radio" data-key="'+key+'" aria-checked="'+(key===diffSel?'true':'false')+'">'+
+      '<span class="dname">'+d.NOM+(key===CONFIG.DIFICULTAT_PER_DEFECTE?' <i>per defecte</i>':'')+'</span>'+
+      '<small>'+diffInfo(d)+'</small></button>';
+  });
+  list.innerHTML=html;
+}
+function openDiff(){
+  diffSel=(state.diff&&CONFIG.DIFICULTATS[state.diff])?state.diff:CONFIG.DIFICULTAT_PER_DEFECTE;
+  if(!CONFIG.DIFICULTATS[diffSel])diffSel=Object.keys(CONFIG.DIFICULTATS)[0];
+  renderDiffs();$('diffO').hidden=false;$('diffStart').focus();
+}
+$('diffList').addEventListener('click',function(e){
+  var b=e.target.closest('.diff');if(!b)return;
+  diffSel=b.getAttribute('data-key');renderDiffs();
+  var nb=$('diffList').querySelector('[data-key="'+diffSel+'"]');if(nb)nb.focus();
+});
+$('diffStart').addEventListener('click',function(){ac();startGame(diffSel);});
+function startGame(key){
+  state.diff=key;applyDifficulty(key);
+  state.level=1;state.coins=D.MONEDES_INICIALS;state.seenLights=false;state.seenTraffic=false;save();
+  $('diffO').hidden=true;newLevel();cv.focus();
+}
+function applyDifficulty(key){
+  D=CONFIG.DIFICULTATS[key]||CONFIG.DIFICULTATS[CONFIG.DIFICULTAT_PER_DEFECTE]||CONFIG.DIFICULTATS[Object.keys(CONFIG.DIFICULTATS)[0]];
+  BOMB_COST=D.PREU_BOMBA;CONT_COST=D.PREU_CONTINUAR;LIVES=Math.max(1,D.VIDES|0);
+  T_GREEN=D.SEMAFOR_VERD;T_AMBER=D.SEMAFOR_GROC;T_RED=D.SEMAFOR_VERMELL;T_CYCLE=T_GREEN+T_AMBER+T_RED;
+  TRAFFIC_FROM=D.TRANSIT_DES_DEL_NIVELL;
+  applyConfigTexts();
+}
+function applyConfigTexts(){
+  $('mBombCost').textContent=BOMB_COST;$('contCost').textContent=CONT_COST;
+  $('hLives').textContent=LIVES;$('hTraffic').textContent=TRAFFIC_FROM;$('hLights').textContent=D.SEMAFORS_DES_DEL_NIVELL;
+  $('hBomb').textContent=BOMB_COST;$('hEmerg').textContent=D.VIDES_XOC_EMERGENCIA;
+  $('hExtraS').textContent=D.TEMPS_EXTRA_SEGONS;$('hExtraP').textContent=D.TEMPS_EXTRA_PREU;
+  $('buyTime').textContent='+'+D.TEMPS_EXTRA_SEGONS+' segons · '+D.TEMPS_EXTRA_PREU+' monedes';
+}
 
 if(window.ResizeObserver)new ResizeObserver(function(){resize();}).observe(stage);else window.addEventListener('resize',resize);
 
 /* ---------- arrencada ---------- */
-function applyConfigTexts(){
-  $('hintCost').textContent=HINT_COST;$('bombCost').textContent=BOMB_COST;$('contCost').textContent=CONT_COST;
-  $('hLives').textContent=LIVES;$('hTraffic').textContent=TRAFFIC_FROM;$('hLights').textContent=CONFIG.SEMAFORS_DES_DEL_NIVELL;
-  $('hHint').textContent=HINT_COST;$('hBomb').textContent=BOMB_COST;$('zeroCoins').textContent=CONFIG.MONEDES_INICIALS;
-}
 function boot(data){
-  applyConfigTexts();load();
-  if(data&&data.level>0){state.level=data.level|0;state.coins=Math.max(0,data.coins|0);}
-  renderSound();loadEngine();newLevel();lastNow=performance.now();requestAnimationFrame(loop);
+  load();
+  if(data&&data.level>0){state.level=data.level|0;state.coins=Math.max(0,data.coins|0);if(data.diff)state.diff=data.diff;}
+  var fresh=!state.diff||!CONFIG.DIFICULTATS[state.diff];
+  applyDifficulty(fresh?CONFIG.DIFICULTAT_PER_DEFECTE:state.diff);
+  if(fresh){state.level=1;state.coins=D.MONEDES_INICIALS;}
+  renderSound();loadEngine();newLevel();
+  lastReal=performance.now();requestAnimationFrame(loop);
+  if(fresh)openDiff();
 }
-try{if(window.claude&&window.claude.hot&&window.claude.hot.snapshot)window.claude.hot.snapshot(function(){return{level:state.level,coins:state.coins};});}catch(e){}
+try{if(window.claude&&window.claude.hot&&window.claude.hot.snapshot)window.claude.hot.snapshot(function(){return{level:state.level,coins:state.coins,diff:state.diff};});}catch(e){}
 var hot=window.claude&&window.claude.hot;
 if(hot&&hot.ready)hot.ready(boot);else boot((hot&&hot.data)||{});
 })();
